@@ -6,6 +6,9 @@ import { Divider } from 'react-native-elements';
 import { connect } from 'react-redux'
 import AdminScreen from '../AdminScreen';
 
+
+
+
 class Login extends React.Component {
     constructor() {
         super()
@@ -15,6 +18,8 @@ class Login extends React.Component {
             adminScreen: false
         }
     }
+
+
 
     login = () => {
         const { email, password } = this.state
