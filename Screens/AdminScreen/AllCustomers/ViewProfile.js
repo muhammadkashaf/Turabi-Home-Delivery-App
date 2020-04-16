@@ -90,7 +90,7 @@ export default class ViewProfile extends React.Component {
         })
     }
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         this.getOrders()
     }
 

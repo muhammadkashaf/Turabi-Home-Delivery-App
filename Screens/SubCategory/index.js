@@ -80,7 +80,7 @@ export default class SubCategory extends React.Component {
         })
     }
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         // this.getData()
         this.setState({ data: this.props.screenProps.data })
 

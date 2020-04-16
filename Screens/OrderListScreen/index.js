@@ -69,7 +69,7 @@ class OrderList extends React.Component {
         //Settign up the duration of countdown in seconds to re-render
     }
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         this.props.navigation.state.params.userActiveOrder && this.updatelist()
     }
 

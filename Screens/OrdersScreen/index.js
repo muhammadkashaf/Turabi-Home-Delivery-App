@@ -21,7 +21,7 @@ class OrdersScreen extends React.Component {
         }
     }
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         const { list, activeOrderArr, completedOrdersArr } = this.state
         const { user } = this.props.screenProps
 

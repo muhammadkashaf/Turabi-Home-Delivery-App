@@ -158,7 +158,7 @@ export default class App extends React.Component {
     ).start(() => this.spin())
   }
 
-  componentWillMount = () => {
+  UNSAFE_componentWillMount = () => {
     // const { data } = this.state;
 
     this.checkSignIn()

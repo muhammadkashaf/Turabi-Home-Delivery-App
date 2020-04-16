@@ -18,7 +18,7 @@ export default class SignUp extends React.Component {
         }
     }
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         firebase.auth().onAuthStateChanged(user => {
             // console.log(user)
         })

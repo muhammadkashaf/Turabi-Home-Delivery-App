@@ -42,7 +42,7 @@ export default class CustomerDetails extends Component {
 
     }
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         this.getUsers()
     }
 

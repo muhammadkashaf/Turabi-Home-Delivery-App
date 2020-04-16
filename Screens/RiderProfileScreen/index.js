@@ -21,7 +21,7 @@ export default class RiderProfileScreen extends React.Component {
         }
     }
 
-    componentDidMount() {
+    UNSAFE_componentWillMount() {
         this.getPermissionAsync();
     }
 
@@ -48,7 +48,7 @@ export default class RiderProfileScreen extends React.Component {
         }
     };
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         const { list } = this.state
         firebase.database().ref('/orders/').on('child_added', snapShot => {
             let allOrders = snapShot.val()

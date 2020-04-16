@@ -138,7 +138,7 @@ export default class AddNewProduct extends React.Component {
         this.setState({ data: null })
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.keyboardDidShowSub = Keyboard.addListener('keyboardDidShow', this.handleKeyboardDidShow);
         this.keyboardDidHideSub = Keyboard.addListener('keyboardDidHide', this.handleKeyboardDidHide);
     }

@@ -48,7 +48,7 @@ export default class ProfileScreen extends React.Component {
         }
     };
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         const { list } = this.state
         firebase.database().ref('/orders/').on('child_added', snapShot => {
             let allOrders = snapShot.val()

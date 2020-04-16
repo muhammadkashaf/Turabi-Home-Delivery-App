@@ -52,7 +52,7 @@ class DashboardForUser extends React.Component {
         })
     }
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         fetchAllStudents()
         // const { myActiveOrders } = this.state
         // this.props.screenProps.user && this.updateList()

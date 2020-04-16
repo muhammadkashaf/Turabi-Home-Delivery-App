@@ -51,7 +51,7 @@ export default class ActiveOrder extends React.Component {
     //     Linking.openURL(url);
     // }
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         this.updateActiveOrdersList()
     }
 

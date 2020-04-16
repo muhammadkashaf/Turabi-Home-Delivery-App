@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, ImageBackground, Image } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class Home extends React.Component {
   render() {
