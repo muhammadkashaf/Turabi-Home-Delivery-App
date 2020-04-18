@@ -5,6 +5,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Divider } from 'react-native-elements';
 import firebase from '../../Component/Config/Firebase';
 import axios from 'axios';
+import https from 'https';
 
 export default class SignUp extends React.Component {
     constructor(props) {
@@ -86,26 +87,31 @@ export default class SignUp extends React.Component {
                     "lname": lastName,
 
                 }
-                const formData = new FormData();
-
-
-                formData.append("roll_id", this.state.userType),
-                    formData.append("email", email.toLowerCase()),
-                    formData.append("password", password),
-                    formData.append("fname", firstName),
-                    formData.append("lname", lastName),
 
 
 
-                    console.log("********************************", obj);
+                console.log("********************************", obj);
 
 
+                // const axios = require('axios');
+                // const https = require('https');
 
-                axios.post("https://144.91.70.164/Turabi/signup.php", formData)
-                    .then(response => {
+                var formdata = new FormData();
 
+                formdata.append("roll_id", this.state.userType),
+                    formdata.append("email", email.toLowerCase()),
+                    formdata.append("password", password),
+                    formdata.append("fname", firstName),
+                    formdata.append("lname", lastName),
+
+
+                axios.post("https://144.91.70.164/Turabi/signup.php", formdata, {
+                    headers: {'Content-Type': 'multipart/form-data'},
+                    httpsAgent: new https.Agent({
+                        rejectUnauthorized: false
+                    })
+                }).then(response => {
                         console.log(response);
-
 
                         if (response.status) {
                             Alert.alert("Alert", "Signup successful")
