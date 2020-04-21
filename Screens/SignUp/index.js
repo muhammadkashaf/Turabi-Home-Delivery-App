@@ -5,7 +5,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Divider } from 'react-native-elements';
 import firebase from '../../Component/Config/Firebase';
 import axios from 'axios';
-import https from 'https';
 
 export default class SignUp extends React.Component {
     constructor(props) {
