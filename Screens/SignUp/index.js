@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, ImageBackground, Image, KeyboardAvoidingView, Alert } from 'react-native';
-import { Icon, Item, Input, Picker, Button, loader } from 'native-base';
+import { Icon, Item, Input, Picker, Button, Spinner } from 'native-base';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Divider } from 'react-native-elements';
 import firebase from '../../Component/Config/Firebase';
@@ -10,16 +10,22 @@ export default class SignUp extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            firstName: 'user',
-            lastName: 'rider',
-            email: 'ride1@gmail.com',
-            password: '12345678',
-            firstNameErr: '',
-            lastNameErr: '',
-            emailErr: '',
-            passwordErr: '',
-            userType: 2,
-            currentUser: null
+
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
+
+            loader: false,
+            userType: '',
+            currentUser: null,
+
+            userTypeErr: false,
+            firstNameErr: false,
+            lastNameErr: false,
+            emailErr: false,
+            passwordErr: false,
+
         }
     }
 
@@ -29,47 +35,34 @@ export default class SignUp extends React.Component {
         })
     }
 
-    // signUp = () => {
-    //     const { email, password, firstName, lastName, userType } = this.state
 
-    //     // console.log(email, password)
-    //     firebase.auth().createUserWithEmailAndPassword(email, password)
-    //         .then((user) => {
+    checkField = (key) => {
+        if (key == "password") {
+            if (this.state.password.length > 5) {
+                this.setState({ passwordErr: false })
+            }
+            else {
+                this.setState({ passwordErr: true })
+            }
+        } else {
+            if (!this.state[key]) {
+                this.setState({
+                    [`${key}Err`]: true
+                })
+            } else {
+                this.setState({
+                    [`${key}Err`]: false
+                })
+            }
+        }
+    }
 
-    //             user.user.updateProfile({
-    //                 displayName: `${firstName} ${lastName}`,
-    //                 photoURL: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-    //             }).then(function () {
-    //                 const userObj = {
-    //                     name: `${firstName} ${lastName}`,
-    //                     email: user.user.email,
-    //                     userType: userType,
-    //                     profilePic: user.user.photoURL
-    //                 }
-    //                 firebase.database().ref(`/users/${user.user.uid}/`).push(userObj)
-    //                 // userType === "Rider" && this.props.navigation.navigate('OrdersScreen')
-    //             }, function (err) {
-    //                 console.log(err)
-    //             })
-
-    //             this.setState({
-    //                 firstName: '',
-    //                 lastName: '',
-    //                 email: '',
-    //                 password: '',
-    //                 userType: '', currentUser: user.user
-    //             })
-    //         })
-    //         .then((user) => console.log('user', user))
-    //         .catch((err) => alert(err))
-    // }
 
 
 
     signUp = () => {
-        this.setState({ loader: true })
 
-        const { email, password, firstName, lastName } = this.state
+        const { userType, email, password, firstName, lastName } = this.state
 
         console.log("SIGN UP jksdajkfajkshjghj")
         let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -92,9 +85,6 @@ export default class SignUp extends React.Component {
                 console.log("********************************", obj);
 
 
-                // const axios = require('axios');
-                // const https = require('https');
-
                 var formdata = new FormData();
 
                 formdata.append("roll_id", this.state.userType),
@@ -104,35 +94,35 @@ export default class SignUp extends React.Component {
                     formdata.append("lname", lastName),
 
 
-                axios.post("https://144.91.70.164/Turabi/signup.php", formdata, {
-                    headers: {'Content-Type': 'multipart/form-data'},
-                    httpsAgent: new https.Agent({
-                        rejectUnauthorized: false
-                    })
-                }).then(response => {
-                        console.log(response);
+                    axios.post("http://hnh11.xyz/Turabi/signup.php", formdata)
+                        .then(res => {
+                            console.log('api response', res);
+                            console.log('api status', res.data.status);
+                            console.log('api error message', res.data.message)
 
-                        if (response.status) {
-                            Alert.alert("Alert", "Signup successful")
-                            this.setState({ loader: true })
-                            this.props.navigation.navigate("Login")
-                        }
-                        else {
-                            this.setState({ loader: false })
-                            Alert.alert("Error", response.message)
+                            if (res.data.status === true) {
 
-                        }
-                        console.log("Alert", response, response.status)
+                                this.setState({ loader: true })
+                                Alert.alert("Alert", "Signup successful")
+                                this.props.navigation.navigate("Login")
+                            }
+                            else {
+                                this.setState({ loader: false })
+                                alert(JSON.stringify(res.data.message))
 
-                    })
-                    .catch(err => console.log("*-*-*-*", err))
+                            }
+
+                        })
+                        .catch(err => console.log("*-*-*-*", err))
 
 
             }
+        } if (userType === '') {
+            this.setState({ userTypeErr: true, loader: false })
         } if (!email) {
             this.setState({ emailErr: true, loader: false })
-        } if (!firstName || firstName.length < 5) {
-            this.setState({ firstName: true, loader: false })
+        } if (!firstName) {
+            this.setState({ firstNameErr: true, loader: false })
         } if (!lastName) {
             this.setState({ lastNameErr: true, loader: false })
         }
@@ -142,7 +132,7 @@ export default class SignUp extends React.Component {
     }
 
     render() {
-        const { email, password, firstName, lastName, firstNameErr, lastNameErr, emailErr, passwordErr } = this.state
+        const { userTypeErr, firstNameErr, lastNameErr, emailErr, passwordErr, loader } = this.state
 
         return (
             <View style={styles.container}>
@@ -155,7 +145,7 @@ export default class SignUp extends React.Component {
 
                         <View style={{ alignItems: 'center', alignContent: 'center', justifyContent: 'center', width: '100%', marginTop: '10%' }} >
 
-                            <Item picker regular style={{ borderColor: '#fff', margin: 5, width: "80%" }}>
+                            <Item error={userTypeErr} picker regular style={{ width: '80%' }} >
                                 <Picker
                                     mode="dropdown"
                                     iosIcon={<Icon name="arrow-down" />}
@@ -171,56 +161,70 @@ export default class SignUp extends React.Component {
                                     <Picker.Item label="Customer" value="3" />
                                 </Picker>
                             </Item>
+                            {userTypeErr && <Text style={{ color: 'red', fontSize: 9 }} >User Type is required</Text>}
 
-                            <View style={{ display: 'flex', flexDirection: 'row' }} >
+
+
+
+                            <View style={{ marginTop: '2%', width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }} >
+
                                 <View>
                                     <Text style={styles.text}>First Name</Text>
-                                    <Item regular style={{}} >
-                                        <Input placeholder='First Name' value={this.state.firstName} onChangeText={(firstName) => this.setState({ firstName })} />
+                                    <Item error={firstNameErr} regular style={{}}  >
+                                        <Input onBlur={() => this.checkField("firstName")} placeholder='First Name' value={this.state.firstName} onChangeText={(firstName) => this.setState({ firstName })} />
                                     </Item>
-                                    {/* {firstNameErr && <Text style={{ color: 'red', fontSize: 12, alignSelf: 'flex-end' }} >FirstName is required</Text>} */}
+                                    {firstNameErr && <Text style={{ color: 'red', fontSize: 9 }} >firstName is required</Text>}
 
                                 </View>
 
-                                <View style={{ marginLeft: '10%' }} >
+                                <View style={{ marginRight: '10%' }}>
                                     <Text style={styles.text}>Last Name</Text>
-                                    <Item regular style={{}}>
-                                        <Input placeholder='Last Name' value={this.state.lastName} onChangeText={(lastName) => this.setState({ lastName })} />
+                                    <Item error={lastNameErr} regular style={{}} >
+                                        <Input onBlur={() => this.checkField("lastName")} placeholder='Last Name' value={this.state.lastName} onChangeText={(lastName) => this.setState({ lastName })} />
                                     </Item>
-                                    {/* {lastNameErr && <Text style={{ color: 'red', fontSize: 12, alignSelf: 'flex-end' }} >LastName is required</Text>} */}
+                                    {lastNameErr && <Text style={{ color: 'red', fontSize: 9 }} >LastName is required</Text>}
 
                                 </View>
                             </View>
 
-                            <View>
+                            <View style={{ marginTop: '2%' }}>
                                 <Text style={styles.text}>E-mail</Text>
-                                <Item regular style={{ width: '80%', marginTop: '2%' }} >
-                                    <Input placeholder='example. hnhsolution...' value={this.state.email} onChangeText={(email) => this.setState({ email })} />
+                                <Item error={emailErr} regular style={{ width: '80%' }} >
+                                    <Input onBlur={() => this.checkField("email")} placeholder='example. hnhsolution...' value={this.state.email} onChangeText={(email) => this.setState({ email })} />
                                 </Item>
-                                {/* {emailErr && <Text style={{ color: 'red', fontSize: 12, alignSelf: 'flex-end', marginRight: '10%' }} >Email address is required</Text>} */}
+                                {emailErr && <Text style={{ color: 'red', fontSize: 9 }} >Email address is required</Text>}
 
                             </View>
 
                             <View style={{ marginTop: '5%' }} >
                                 <Text style={styles.text}>Password</Text>
-                                <Item regular style={{ width: '80%', marginTop: '2%' }}>
-                                    <Input onChangeText={(password) => this.setState({ password })} placeholder='*********' value={this.state.password} secureTextEntry />
+                                <Item error={passwordErr} regular style={{ width: '80%' }}>
+                                    <Input onBlur={() => this.checkField("password")} onChangeText={(password) => this.setState({ password })} placeholder='*********' value={this.state.password} secureTextEntry />
                                 </Item>
-                                {/* {passwordErr && <Text style={{ color: 'red', fontSize: 12, alignSelf: 'flex-end', marginRight: '10%' }} >Password length must be greater than 6 digits</Text>} */}
+                                {passwordErr && <Text style={{ color: 'red', fontSize: 9 }} >Password length must be greater than 6 digits</Text>}
 
                             </View>
 
                         </View>
                     </KeyboardAvoidingView>
 
-                    <View style={{ width: '100%', display: 'flex', flexDirection: 'row', marginTop: '5%' }} >
-                        <Button transparent iconLeft light style={{ marginLeft: '30%' }} onPress={this.signUp} >
-                            <TouchableOpacity style={{ display: 'flex', flexDirection: 'row' }} >
-                                <Icon name="sign-out" type="FontAwesome" />
-                                <Text style={{ color: "#fff", fontSize: 20, borderBottomColor: "#ffff", borderBottomWidth: 1 }} >Signup</Text>
-                            </TouchableOpacity>
-                        </Button>
-                    </View>
+
+                    {!loader ?
+                        <View style={{ width: '100%', display: 'flex', flexDirection: 'row', marginTop: '5%' }} >
+                            <Button transparent iconLeft light style={{ marginLeft: '30%' }} onPress={this.signUp} >
+                                <TouchableOpacity style={{ display: 'flex', flexDirection: 'row' }} >
+                                    <Icon name="sign-out" type="FontAwesome" />
+                                    <Text style={{ color: "#fff", fontSize: 20, borderBottomColor: "#ffff", borderBottomWidth: 1 }} >Signup</Text>
+                                </TouchableOpacity>
+                            </Button>
+                        </View>
+
+                        :
+
+                        <Spinner color="#fc8b8c" />
+                    }
+
+
 
                     <View style={{ bottom: 5, position: 'absolute', alignSelf: 'center' }} >
                         <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
@@ -229,7 +233,7 @@ export default class SignUp extends React.Component {
                     </View>
 
                 </ImageBackground>
-            </View>
+            </View >
         );
     }
 }
