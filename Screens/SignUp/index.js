@@ -96,6 +96,7 @@ export default class SignUp extends React.Component {
 
                     axios.post("http://hnh11.xyz/Turabi/signup.php", formdata)
                         .then(res => {
+
                             console.log('api response', res);
                             console.log('api status', res.data.status);
                             console.log('api error message', res.data.message)
@@ -103,13 +104,12 @@ export default class SignUp extends React.Component {
                             if (res.data.status === true) {
 
                                 this.setState({ loader: true })
+                                this.props.navigation.navigate('RiderProfileScreen')
                                 Alert.alert("Alert", "Signup successful")
-                                this.props.navigation.navigate("Login")
                             }
                             else {
                                 this.setState({ loader: false })
-                                alert(JSON.stringify(res.data.message))
-
+                                Alert.alert('Error', JSON.stringify(res.data.message.toString()))
                             }
 
                         })
