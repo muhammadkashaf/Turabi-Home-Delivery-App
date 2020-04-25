@@ -11,10 +11,10 @@ export default class SignUp extends React.Component {
         super(props)
         this.state = {
 
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
+            firstName: 'rider',
+            lastName: 'khan',
+            email: 'rider1@gmail.com',
+            password: 'rider123',
 
             loader: false,
             userType: '',
@@ -64,6 +64,19 @@ export default class SignUp extends React.Component {
 
         const { userType, email, password, firstName, lastName } = this.state
 
+        if (!userType) {
+            return this.setState({ userTypeErr: true, loader: false })
+        } if (!email) {
+            return this.setState({ emailErr: true, loader: false })
+        } if (!firstName) {
+            return this.setState({ firstNameErr: true, loader: false })
+        } if (!lastName) {
+            return this.setState({ lastNameErr: true, loader: false })
+        }
+        if (password.length < 6) {
+            return this.setState({ passwordErr: true, loader: false })
+        }
+
         console.log("SIGN UP jksdajkfajkshjghj")
         let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (email && password && firstName && lastName) {
@@ -87,7 +100,7 @@ export default class SignUp extends React.Component {
 
                 var formdata = new FormData();
 
-                formdata.append("roll_id", this.state.userType),
+                formdata.append("roll_id", userType),
                     formdata.append("email", email.toLowerCase()),
                     formdata.append("password", password),
                     formdata.append("fname", firstName),
@@ -97,19 +110,31 @@ export default class SignUp extends React.Component {
                     axios.post("http://hnh11.xyz/Turabi/signup.php", formdata)
                         .then(res => {
 
-                            console.log('api response', res);
-                            console.log('api status', res.data.status);
-                            console.log('api error message', res.data.message)
+                            // console.log('api response', res);
+                            // console.log('api data', res.data);
+                        
+                            console.log('api config', res.config);
+                            console.log('api config1', res.config.data);
+                            console.log('api config12', res.config.data._parts[0][1]);
+                            // console.log('api status', res.data.status);
+                            // console.log('api message', res.data.message)
 
-                            if (res.data.status === true) {
+                            if (!res.data.status) {
+                                this.setState({ loader: false })
+                                Alert.alert('Error', res.data.message.Record)
+                            }
 
+                            if (res.config.data._parts[0][1] == '2') {
+                                console.log(res.data.roll_id);
+                                
+                                this.setState({ loader: true })
+                                this.props.navigation.navigate('ProfileScreen')
+                                Alert.alert("Alert", "Rider Registered successfully")
+                            }
+                            else if (res.config.data._parts[0][1] == '3') {
                                 this.setState({ loader: true })
                                 this.props.navigation.navigate('RiderProfileScreen')
-                                Alert.alert("Alert", "Signup successful")
-                            }
-                            else {
-                                this.setState({ loader: false })
-                                Alert.alert('Error', JSON.stringify(res.data.message.toString()))
+                                Alert.alert("Alert", "User Registered successfully")
                             }
 
                         })
@@ -117,17 +142,6 @@ export default class SignUp extends React.Component {
 
 
             }
-        } if (userType === '') {
-            this.setState({ userTypeErr: true, loader: false })
-        } if (!email) {
-            this.setState({ emailErr: true, loader: false })
-        } if (!firstName) {
-            this.setState({ firstNameErr: true, loader: false })
-        } if (!lastName) {
-            this.setState({ lastNameErr: true, loader: false })
-        }
-        if (password.length < 6) {
-            this.setState({ passwordErr: true, loader: false })
         }
     }
 
@@ -145,7 +159,7 @@ export default class SignUp extends React.Component {
 
                         <View style={{ alignItems: 'center', alignContent: 'center', justifyContent: 'center', width: '100%', marginTop: '10%' }} >
 
-                            <Item error={userTypeErr} picker regular style={{ width: '80%' }} >
+                            <Item error={userTypeErr} picker regular style={[{ width: '80%' }, this.state.userTypeErr && { borderColor: 'red', borderWidth: .1 }]} >
                                 <Picker
                                     mode="dropdown"
                                     iosIcon={<Icon name="arrow-down" />}
@@ -154,14 +168,14 @@ export default class SignUp extends React.Component {
                                     placeholderStyle={{ color: "#bfc6ea" }}
                                     placeholderIconColor="#007aff"
                                     selectedValue={this.state.userType}
-                                    onValueChange={(userType) => this.setState({ userType })}
+                                    onValueChange={(userType) => this.setState({ userType, userTypeErr: false })}
                                 >
-                                    <Picker.Item label="Select User Type" value="key0" />
+                                    <Picker.Item label="Select User Type" value="" />
                                     <Picker.Item label="Rider" value="2" />
                                     <Picker.Item label="Customer" value="3" />
                                 </Picker>
                             </Item>
-                            {userTypeErr && <Text style={{ color: 'red', fontSize: 9 }} >User Type is required</Text>}
+                            {/* {userTypeErr && <Text style={{ color: 'red', fontSize: 9 }} ></Text>} */}
 
 
 
