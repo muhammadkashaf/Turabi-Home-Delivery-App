@@ -56,14 +56,14 @@ export default class App extends React.Component {
     }).start()
   }
 
-  login = (email, password) => {
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then((user) => {
-        console.log(user)
-        this.setState({ user })
-      })
-      .catch((err) => alert(err))
-  }
+  // login = (email, password) => {
+  //   firebase.auth().signInWithEmailAndPassword(email, password)
+  //     .then((user) => {
+  //       console.log(user)
+  //       this.setState({ user })
+  //     })
+  //     .catch((err) => alert(err))
+  // }
 
   skipForLogin = () => {
     this.setState({ userType: 'Customer' })

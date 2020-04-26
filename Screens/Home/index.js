@@ -3,6 +3,13 @@ import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity } from
 import { Icon } from 'native-base';
 
 export default class Home extends React.Component {
+  constructor() {
+    super();
+
+    console.ignoredYellowBox = [
+      'Setting a timer'
+    ];
+  }
   render() {
     return (
       <View style={styles.container}>

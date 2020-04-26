@@ -6,15 +6,20 @@ import { Divider } from 'react-native-elements';
 import firebase from '../../Component/Config/Firebase';
 import axios from 'axios';
 
+
+
 export default class SignUp extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
+
+
+
         this.state = {
 
-            firstName: 'rider',
-            lastName: 'khan',
-            email: 'rider1@gmail.com',
-            password: 'rider123',
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
 
             loader: false,
             userType: '',
@@ -112,7 +117,7 @@ export default class SignUp extends React.Component {
 
                             // console.log('api response', res);
                             // console.log('api data', res.data);
-                        
+
                             console.log('api config', res.config);
                             console.log('api config1', res.config.data);
                             console.log('api config12', res.config.data._parts[0][1]);
@@ -124,18 +129,18 @@ export default class SignUp extends React.Component {
                                 Alert.alert('Error', res.data.message.Record)
                             }
 
-                            if (res.config.data._parts[0][1] == '2') {
-                                console.log(res.data.roll_id);
-                                
+                            else if (res.config.data._parts[0][1] == '2') {
+
                                 this.setState({ loader: true })
-                                this.props.navigation.navigate('ProfileScreen')
+                                this.props.navigation.navigate('RiderProfileScreen')
                                 Alert.alert("Alert", "Rider Registered successfully")
                             }
                             else if (res.config.data._parts[0][1] == '3') {
                                 this.setState({ loader: true })
-                                this.props.navigation.navigate('RiderProfileScreen')
+                                this.props.navigation.navigate('Login')
                                 Alert.alert("Alert", "User Registered successfully")
                             }
+
 
                         })
                         .catch(err => console.log("*-*-*-*", err))

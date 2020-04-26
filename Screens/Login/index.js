@@ -1,11 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, ImageBackground, Image, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, Image, KeyboardAvoidingView, Alert } from 'react-native';
 import { Icon, Item, Input, Label, Button } from 'native-base';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Divider } from 'react-native-elements';
 import { connect } from 'react-redux'
 import AdminScreen from '../AdminScreen';
-
+import axios from 'axios';
 
 
 
@@ -13,24 +13,126 @@ class Login extends React.Component {
     constructor() {
         super()
         this.state = {
-            email: '',
-            password: '',
-            adminScreen: false
+            email: 'kashafahmed98@gmail.com',
+            password: 'kashaf123',
+            adminScreen: false,
+
+
+            userTypeErr: false,
+
+            emailErr: false,
+            passwordErr: false,
         }
     }
+
+
+    checkField = (key) => {
+        if (key == "password") {
+            if (this.state.password.length > 5) {
+                this.setState({ passwordErr: false })
+            }
+            else {
+                this.setState({ passwordErr: true })
+            }
+        } else {
+            if (!this.state[key]) {
+                this.setState({
+                    [`${key}Err`]: true
+                })
+            } else {
+                this.setState({
+                    [`${key}Err`]: false
+                })
+            }
+        }
+    }
+
 
 
 
     login = () => {
         const { email, password } = this.state
-        if (email === 'admin@domain.com' && password === 'admin123') {
-            this.setState({ adminScreen: true })
-        } else {
-            this.props.screenProps.login(email, password)
+
+        // const { email, password } = this.state
+        // if (email === 'admin@domain.com' && password === 'admin123') {
+        //     this.setState({ adminScreen: true })
+        // } else {
+        //     this.props.screenProps.login(email, password)
+        // }
+
+        if (!email) {
+            return this.setState({ emailErr: true, loader: false })
+        }
+        if (password.length < 6) {
+            return this.setState({ passwordErr: true, loader: false })
+        }
+
+        console.log("SIGN UP jksdajkfajkshjghj")
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (email && password) {
+            if (reg.test(email) === false) {
+                this.setState({ loader: false })
+                Alert.alert("Alert", "Please Enter Valid Email Address")
+            } else {
+                let obj = {
+                    "roll_id": 2,
+                    "email": email,
+                    "password": password,
+
+
+                }
+
+
+
+                console.log("********************************", obj);
+
+
+                var formdata = new FormData();
+
+                formdata.append("roll_id", 2),
+                    formdata.append("email", email.toLowerCase()),
+                    formdata.append("password", password),
+
+
+
+                    axios.post("http://hnh11.xyz/Turabi/login.php", formdata)
+                        .then(res => {
+
+                      
+                            console.log('api status', res.data[0]);
+
+                            console.log('api res data', res.data);
+
+                         
+                            if (!res.status) {
+                                this.setState({ loader: false })
+                                Alert.alert('Error', res.message)
+                            }
+
+                            else if (res.data.roll_id == 2) {
+
+                                this.setState({ loader: true })
+                                this.props.navigation.navigate('RiderProfileScreen')
+                                // Alert.alert("Alert", "Rider Registered successfully")
+                            }
+                            else if (res.data.roll_id == '3') {
+                                this.setState({ loader: true })
+                                this.props.navigation.navigate('DashboardForUser')
+                                // Alert.alert("Alert", "User Registered successfully")
+                            }
+
+
+                        })
+                        .catch(err => console.log("*-*-*-*", err))
+
+
+            }
         }
     }
 
     render() {
+
+        const { emailErr, passwordErr, loader } = this.state
         // console.log(this.props)
         if (!this.state.adminScreen) {
             return (
@@ -43,26 +145,37 @@ class Login extends React.Component {
                             <View style={{ alignItems: 'center', alignContent: 'center', justifyContent: 'center', width: '100%' }} >
                                 <View>
                                     <Text style={styles.text} >E-mail</Text>
-                                    <Item regular style={{ width: '80%', marginTop: '2%' }} >
-                                        <Input onChangeText={(email) => this.setState({ email })} placeholder='example. hnhsolution...' />
+                                    <Item error={emailErr} regular style={{ width: '80%', marginTop: '2%' }} >
+                                        <Input value={this.state.email} onBlur={() => this.checkField("email")} onChangeText={(email) => this.setState({ email })} placeholder='example. hnhsolution...' />
                                     </Item>
+                                    {emailErr && <Text style={{ color: 'red', fontSize: 12, alignSelf: 'flex-end', marginRight: '10%' }} >Email address is required</Text>}
+
                                 </View>
                                 <View style={{ marginTop: '5%' }} >
                                     <Text style={styles.text} >Password</Text>
-                                    <Item regular style={{ width: '80%', marginTop: '2%' }}>
-                                        <Input placeholder='*********' secureTextEntry onChangeText={(password) => this.setState({ password })} />
+                                    <Item error={passwordErr} regular style={{ width: '80%', marginTop: '2%' }}>
+                                        <Input value={this.state.password} placeholder='*********' onBlur={() => this.checkField("password")} secureTextEntry onChangeText={(password) => this.setState({ password })} />
                                     </Item>
+                                    {passwordErr && <Text style={{ color: 'red', fontSize: 9 }} >Password length must be greater than 6 digits</Text>}
+
                                 </View>
                             </View>
                         </KeyboardAvoidingView>
                         <View style={{ width: '100%', display: 'flex', flexDirection: 'row', marginTop: '5%' }} >
 
-                            <Button transparent iconLeft light style={{ marginLeft: '30%' }} onPress={() => this.login()} >
-                                <TouchableOpacity style={{ display: 'flex', flexDirection: 'row' }} >
-                                    <Icon name="sign-out" type="FontAwesome" />
-                                    <Text style={{ color: "#fff", fontSize: 20, borderBottomColor: "#ffff", borderBottomWidth: 1 }} >Log In</Text>
-                                </TouchableOpacity>
-                            </Button>
+
+                            {!loader ?
+                                <Button transparent iconLeft light style={{ marginLeft: '30%' }} onPress={this.login} >
+                                    <TouchableOpacity style={{ display: 'flex', flexDirection: 'row' }} >
+                                        <Icon name="sign-out" type="FontAwesome" />
+                                        <Text style={{ color: "#fff", fontSize: 20, borderBottomColor: "#ffff", borderBottomWidth: 1 }} >Log In</Text>
+                                    </TouchableOpacity>
+                                </Button>
+                                :
+                                <Spinner color="#fc8b8c" />
+
+                            }
+
 
                             <Button transparent iconLeft light style={{ marginLeft: '20%' }} >
                                 <TouchableOpacity style={{ display: 'flex', flexDirection: 'row' }} onPress={() => { this.props.screenProps.skipForLogin(), this.props.navigation.navigate('DashboardForUser') }}>
@@ -70,6 +183,7 @@ class Login extends React.Component {
                                     <Icon name="angle-double-right" type="FontAwesome" />
                                 </TouchableOpacity>
                             </Button>
+
 
                         </View>
 
